@@ -1,0 +1,52 @@
+version: '2'
+services:
+  thats4free:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - WITH_XDEBUG=true
+        - PRODUCTION=true
+    restart: always
+    networks:
+      - thats4free
+    ports:
+      - "80:80"
+      - "443:443"
+#    volumes:
+#      - ./app:/app
+    environment:
+      - CONTACT_EMAIL=jrareas@gmail.com
+      - PHP_IDE_CONFIG=serverName=thats4free.ca
+      - RAPID_API_KEY=249b3870-60b9-11ea-b4bc-6b4cfbd3abad,ddc46aa0-614b-11ea-8129-ab3195e1b5d2
+      - 'PHP_EXTENSIONS=bcmath bz2 calendar exif gd gettext intl mysqli pcntl pdo_mysql soap sockets sysvmsg sysvsem sysvshm opcache zip redis xsl xdebug'
+    links:
+      - mysql
+    cpu_shares: 128
+    mem_limit: 1024m
+  mysql:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'thats4free'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'thats4free'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'n7ftRp8VCkm'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'n7ftRp8VCkm'
+    networks:
+      - thats4free
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - '3306:3306'
+    expose:
+      # Opens port 3306 on the container
+      - '3306'
+    volumes:
+      - ./my-db:/var/lib/mysql
+    cpu_shares: 128
+    mem_limit: 1024m
+networks:
+  thats4free:
+    external: false
